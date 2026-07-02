@@ -589,6 +589,9 @@ const FOCUS_WARNING_TYPES = ['雷电', '暴雨', '台风', '强对流', '冰雹'
 const FOCUS_WARNING_LEVELS = ['黄色', '橙色', '红色'];
 
 // 每日API请求上限
+// 共享数据源URL
+const SHARED_DATA_URL = 'https://cdn.jsdelivr.net/gh/qiqi1616/-weather-dashboard@main/data/weather.json';
+
 const DAILY_API_LIMIT = 700;
 let dailyApiCount = 0;
 let dailyApiCountDate = '';  // 记录计数所属日期，跨天重置
@@ -1850,6 +1853,7 @@ function initMapZoom() {
 
 // ========== 定时调度 ==========
 let scheduleCheckTimer = null;
+const REFRESH_INTERVAL = 30 * 60 * 1000; // 30分钟自动刷新一次
 
 // 统一刷新时间：每天12:00（天气+预警一起更新）
 const REFRESH_HOUR = 12;
@@ -1881,62 +1885,57 @@ function checkScheduledRefresh() {
   }
 }
 
-// 全量刷新（每天12:00 + 首次加载）
+// 全量刷新：从共享数据源获取数据（不直接调用天气API）
 async function refreshData() {
   document.getElementById('refreshTime').textContent = '正在更新...';
   
-  // 重置预警API状态
-  warningApiStatus = 'unknown';
-  
-  // 获取天气数据
-  const weatherResults = await fetchWeatherBatch(Object.entries(CITY_DATA));
-  Object.assign(cityWeatherData, weatherResults);
-  
-  // 清空旧预警数据
-  cityWarningData = {};
-  
-  // 获取预警数据
-  const warningResults = await fetchWarningsBatch(Object.entries(CITY_DATA));
-  Object.entries(warningResults).forEach(([qid, data]) => {
-    cityWarningData[qid] = data;
-  });
-  
-  // 获取恶劣天气城市的3天预报
-  const severeCities = Object.entries(CITY_DATA).filter(([_, city]) => {
-    const weather = cityWeatherData[city.qid];
-    if (!weather || !weather.text) return false;
-    return SEVERE_WEATHER_KEYWORDS.some(kw => weather.text.includes(kw));
-  });
-  
-  for (let i = 0; i < severeCities.length; i += 5) {
-    const batch = severeCities.slice(i, i + 5);
-    const promises = batch.map(async ([_, city]) => {
-      const forecast = await fetchForecast(city.qid);
-      if (forecast) {
-        cityForecastData[city.qid] = forecast;
-      }
-    });
-    await Promise.all(promises);
-    if (i + 5 < severeCities.length) {
-      await new Promise(resolve => setTimeout(resolve, 200));
+  try {
+    // 添加缓存破坏参数，确保获取最新数据
+    const fetchUrl = SHARED_DATA_URL + '?_t=' + Date.now();
+    const resp = await fetch(fetchUrl);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const sharedData = await resp.json();
+    
+    // 填充天气数据
+    cityWeatherData = {};
+    if (sharedData.weather) {
+      Object.entries(sharedData.weather).forEach(([qid, data]) => {
+        cityWeatherData[qid] = data;
+      });
     }
+    
+    // 填充预警数据
+    cityWarningData = {};
+    if (sharedData.warning) {
+      Object.entries(sharedData.warning).forEach(([qid, data]) => {
+        cityWarningData[qid] = data;
+      });
+    }
+    
+    // 填充预报数据
+    cityForecastData = {};
+    if (sharedData.forecast) {
+      Object.entries(sharedData.forecast).forEach(([qid, data]) => {
+        cityForecastData[qid] = data;
+      });
+    }
+    
+    // 更新UI
+    renderCityMarkers();
+    renderCityList();
+    renderSummary();
+    renderImpactAssessment();
+    
+    const ts = formatTime(new Date());
+    const dataTime = sharedData.updateTime ? sharedData.updateTime.replace('T', ' ').substring(0, 16) : ts;
+    document.getElementById('refreshTime').textContent = `更新: ${dataTime}`;
+    document.getElementById('warningRefreshTime').textContent = `共享数据同步`;
+    
+    console.log(`[共享数据] 加载完成: 天气${Object.keys(cityWeatherData).length}城, 预警${Object.keys(cityWarningData).length}城, 预报${Object.keys(cityForecastData).length}城`);
+  } catch (e) {
+    console.error('[共享数据] 加载失败:', e.message);
+    document.getElementById('refreshTime').textContent = '数据加载失败，请刷新重试';
   }
-  
-  // 清理不再恶劣的城市的预报缓存
-  const severeQids = new Set(severeCities.map(([_, c]) => c.qid));
-  Object.keys(cityForecastData).forEach(qid => {
-    if (!severeQids.has(qid)) delete cityForecastData[qid];
-  });
-  
-  // 更新UI
-  renderCityMarkers();
-  renderCityList();
-  renderSummary();
-  renderImpactAssessment();
-  
-  const ts = formatTime(new Date());
-  document.getElementById('refreshTime').textContent = `更新: ${ts}`;
-  document.getElementById('warningRefreshTime').textContent = `每日12:00更新`;
 }
 
 // ========== 初始化 ==========
@@ -1960,8 +1959,8 @@ function init() {
   // 首次加载：全量刷新一次
   refreshData();
   
-  // 定时调度：每分钟检查一次是否到了12:00
-  scheduleCheckTimer = setInterval(checkScheduledRefresh, 60000);
+  // 定时调度：每30分钟从共享数据源刷新一次
+  scheduleCheckTimer = setInterval(refreshData, REFRESH_INTERVAL);
 }
 
 // 启动
