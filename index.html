@@ -1322,15 +1322,13 @@ function renderSummary() {
     const warnings = cityWarningData[city.qid]?.warning || [];
     const hasActiveWarning = warnings.some(w => w.status === 'active');
     
-    // 只统计有橙色或红色预警的城市
-    const hasOrangeOrRed = warnings.some(w => w.status === 'active' && (w.severity === '橙色' || w.severity === '红色'));
-    
-    if (hasOrangeOrRed) {
+    // 统计所有有活跃预警的城市（黄色及以上）
+    if (hasActiveWarning) {
       affectedCitiesSet.add(cityName);
     }
     
-    // 只统计有橙色/红色预警城市的标的
-    if (hasOrangeOrRed) {
+    // 统计有预警城市的标的
+    if (hasActiveWarning) {
       const filteredProps = getFilteredProps(cityName);
       if (filteredProps.length > 0) {
         totalProps += filteredProps.length;
