@@ -566,8 +566,6 @@ body {
 </div>
 
 <script>
-// 台风影响城市标记（2026年7月2日）
-const TYPHOON_AFFECTED_CITIES = ["广州"];
 
 // ========== 配置（硬编码） ==========
 const API_KEY = 'a5866b39daa944138c7aaaa6df596be0';
@@ -950,16 +948,7 @@ function renderCityMarkers() {
     text.textContent = cityName;
     g.appendChild(text);
     
-    // 台风影响城市蓝色旗子
-    if (TYPHOON_AFFECTED_CITIES.includes(cityName)) {
-      const flag = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      flag.setAttribute('x', size + 3);
-      flag.setAttribute('y', -size - 1);
-      flag.setAttribute('font-size', '9');
-      flag.textContent = '🚩';
-      g.appendChild(flag);
-    }
-    
+        
     // 鼠标事件
     g.addEventListener('mouseenter', (e) => showTooltip(e, cityName));
     g.addEventListener('mouseleave', hideTooltip);
