@@ -1013,10 +1013,9 @@ function renderCityList() {
   }
   
   sortedCities.forEach((cityName) => {
-    // 只显示有橙色或红色预警的城市
+    // 显示有预警影响的城市（黄色及以上）
     const _cityWarningsForFilter = getAllWarningsForCity(cityName);
-    const _hasOrangeOrRed = _cityWarningsForFilter.some(w => w.severity === '橙色' || w.severity === '红色');
-    if (!_hasOrangeOrRed) return;
+    if (_cityWarningsForFilter.length === 0) return;
     
     const city = CITY_DATA[cityName];
     const filteredProps = getFilteredProps(cityName);
@@ -1063,7 +1062,7 @@ function renderCityList() {
         <span class="city-name">
           ${cityName}
           ${getHighRiskCount(cityName) > 0 ? '<span class="high-risk-flag" title="台风高风险标的">🚩</span>' : ''}
-          <span class="city-count">${filteredProps.length}标的${getHighRiskCount(cityName) > 0 ? ' <span style="color:#e74c3c;font-size:11px;">(高风险' + getHighRiskCount(cityName) + ')</span>' : ''}</span>
+          <span class="city-count">${filteredProps.length}标的${getHighRiskCount(cityName) > 0 ? ' <span style="color:#e74c3c;font-size:11px;">(高风险' + getHighRiskCount(cityName) + ')</span>' : '')}</span>
           ${warningTags}
         </span>
       </div>
