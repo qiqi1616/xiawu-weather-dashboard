@@ -1202,7 +1202,7 @@ function renderCityList() {
         <span class="city-name">
           ${cityName}
           ${getHighRiskCount(cityName) > 0 ? '<span class="high-risk-flag" title="台风高风险标的">🚩</span>' : ''}
-          <span class="city-count">${filteredProps.length}标的${getHighRiskCount(cityName) > 0 ? ' <span style="color:#e74c3c;font-size:11px;">(高风险' + getHighRiskCount(cityName) + ')</span>' : '')}</span>
+          <span class="city-count">${filteredProps.length}标的${getHighRiskCount(cityName) > 0 ? ' <span style="color:#e74c3c;font-size:11px;">(高风险' + getHighRiskCount(cityName) + ')</span>' : ''}</span>
           ${warningTags}
         </span>
       </div>
