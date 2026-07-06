@@ -432,6 +432,112 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.2); }
 }
+
+/* 台风巴威面板 */
+.typhoon-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 320px;
+  max-height: 420px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+  padding: 14px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+}
+.typhoon-panel::-webkit-scrollbar { width: 4px; }
+.typhoon-panel::-webkit-scrollbar-thumb { background: rgba(239,68,68,0.3); border-radius: 2px; }
+.typhoon-panel .tp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+}
+.typhoon-panel .tp-header .tp-icon {
+  font-size: 20px;
+  animation: tp-spin 4s linear infinite;
+}
+@keyframes tp-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.typhoon-panel .tp-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f87171;
+}
+.typhoon-panel .tp-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border-radius: 4px;
+  margin-left: auto;
+}
+.typhoon-panel .tp-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin: 4px 0;
+  color: #94a3b8;
+}
+.typhoon-panel .tp-row .tp-val { color: #e2e8f0; font-weight: 500; }
+.typhoon-panel .tp-section {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.typhoon-panel .tp-section-title {
+  font-size: 11px;
+  color: #f87171;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.typhoon-panel .tp-text {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+.typhoon-panel .tp-text strong { color: #fbbf24; font-weight: 600; }
+.typhoon-panel .tp-time {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* 防台风提示 */
+.typhoon-tips-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.tip-btn {
+  padding: 6px 14px; font-size: 12px; border: 1px solid rgba(239,68,68,0.3);
+  background: rgba(239,68,68,0.08); color: #fca5a5; border-radius: 6px;
+  cursor: pointer; transition: all 0.2s;
+}
+.tip-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
+.tip-modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
+}
+.tip-modal-overlay.active { display: flex; }
+.tip-modal {
+  background: #1a2332; border: 1px solid rgba(239,68,68,0.3); border-radius: 12px;
+  padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;
+  color: #e2e8f0;
+}
+.tip-modal h3 { color: #f87171; font-size: 16px; margin-bottom: 16px; }
+.tip-modal .tip-item { font-size: 13px; color: #94a3b8; line-height: 1.8; margin-bottom: 8px; padding-left: 16px; position: relative; }
+.tip-modal .tip-item::before { content: '\2022'; position: absolute; left: 0; color: #f87171; }
+.tip-modal .tip-close { float: right; cursor: pointer; color: #64748b; font-size: 18px; }
+.tip-modal .tip-close:hover { color: #f87171; }
+.high-risk-flag {
+  color: #e74c3c;
+  font-size: 14px;
+  margin: 0 2px;
+  animation: pulse-flag 2s ease-in-out infinite;
+}
 </style>
 </head>
 <body>
@@ -461,6 +567,47 @@ body {
 <div class="main-container">
   <section class="map-section">
     <div class="map-container">
+    <div class="typhoon-panel">
+      <div class="tp-header">
+        <span class="tp-icon">🌀</span>
+        <span class="tp-title">台风"巴威"进展通报</span>
+        <span class="tp-badge">超强台风级</span>
+      </div>
+      <div class="tp-row"><span>位置</span><span class="tp-val">塞班西偏南175km (14.3°N, 145.1°E)</span></div>
+      <div class="tp-row"><span>强度</span><span class="tp-val">17级以上（62m/s）</span></div>
+      <div class="tp-row"><span>气压</span><span class="tp-val">915 hPa</span></div>
+      <div class="tp-row"><span>风圈</span><span class="tp-val">七级320-380km / 十级160km</span></div>
+      <div class="tp-row"><span>直径</span><span class="tp-val">超1000公里（巨无霸级）</span></div>
+      <div class="tp-row"><span>移速</span><span class="tp-val">西偏北 25-30km/h</span></div>
+
+      <div class="tp-section">
+        <div class="tp-section-title">📍 路径预报</div>
+        <div class="tp-text">
+          <strong>7月8日前</strong>：远洋西行，对我国无直接影响<br>
+          <strong>7月9日</strong>：进入台湾以东海域警戒圈<br>
+          <strong>7月10-11日</strong>：登陆或擦过台湾岛北部（16-17级）<br>
+          <strong>7月11-12日</strong>：浙闽交界登陆（14-15级）<strong>或</strong>直接登陆浙江（14-16级）
+        </div>
+      </div>
+
+      <div class="tp-section">
+        <div class="tp-section-title">⚠️ 影响评估</div>
+        <div class="tp-text">
+          大概率登陆我国华东，路径闽浙二选一。<strong>7月8日</strong>副高走势将锁定最终路径。<br>
+          影响区域：浙江、上海、江苏、福建北部为主要影响区，广东东部沿海有外围风雨。<br>
+          气象专家建议以应对<strong>"利奇马""烟花"</strong>的心态提前防御。
+        </div>
+      </div>
+
+      <div class="tp-section">
+        <div class="tp-section-title">📊 看板标的关注</div>
+        <div class="tp-text">
+          本看板115城中，<strong>浙江（杭州、宁波、温州、台州、嘉兴、绍兴）、上海、江苏（南京、苏州、无锡、南通）</strong>等华东城市标的需重点关注。具体影响范围和程度将在7月9日后随预报逐步明确。
+        </div>
+      </div>
+
+      <div class="tp-time">数据来源：中央气象台 · 更新时间：2026-07-06 18:00</div>
+    </div>
       <svg id="chinaMap" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid meet">
         <defs>
           <filter id="glow">
@@ -560,6 +707,13 @@ body {
 
     <h4 class="section-title">标的城市列表</h4>
     <div class="city-list" id="cityList"></div>
+    <h4 class="section-title">🌀 防台风提示</h4>
+    <div class="typhoon-tips-buttons">
+      <button class="tip-btn" data-tip="property" onclick="showTyphoonTip('property')">物业管理</button>
+      <button class="tip-btn" data-tip="enterprise" onclick="showTyphoonTip('enterprise')">企财险</button>
+      <button class="tip-btn" data-tip="cargo" onclick="showTyphoonTip('cargo')">货运险</button>
+      <button class="tip-btn" data-tip="engineering" onclick="showTyphoonTip('engineering')">工程险</button>
+    </div>
 
     <h4 class="section-title">恶劣天气影响评估</h4>
     <div id="impactAssessment"></div>
@@ -580,17 +734,7 @@ body {
 <script>
 
 // ========== 配置（硬编码） ==========
-const API_KEY = 'a5866b39daa944138c7aaaa6df596be0';
-const API_DOMAIN = 'mc67cfme6v.re.qweatherapi.com';
-// 预警API统一使用天气Key（已加预警订阅），备用Key
-const WARNING_API_KEY = 'a5866b39daa944138c7aaaa6df596be0';
-const WARNING_API_DOMAIN = 'mc67cfme6v.re.qweatherapi.com';
-// 备用预警Key（当主Key持续403时尝试）
-const WARNING_API_KEY_FALLBACK = 'ca5c63d7a290465b80d9e068bd15787a';
-const WARNING_API_DOMAIN_FALLBACK = 'devapi.qweather.com';
 
-// 预警API状态缓存：'unknown'|'ok'|'failed'
-let warningApiStatus = 'unknown';
 
 // 重点关注的预警类型（只展示这些类型的预警）
 const FOCUS_WARNING_TYPES = ['雷电', '暴雨', '台风', '强对流', '冰雹'];
@@ -598,13 +742,9 @@ const FOCUS_WARNING_TYPES = ['雷电', '暴雨', '台风', '强对流', '冰雹'
 // 重点关注的预警级别（只展示黄/橙/红，过滤蓝色）
 const FOCUS_WARNING_LEVELS = ['黄色', '橙色', '红色'];
 
-// 每日API请求上限
 // 共享数据源URL
 const SHARED_DATA_URL = 'https://cdn.jsdelivr.net/gh/qiqi1616/-weather-dashboard@main/data/weather.json';
 
-const DAILY_API_LIMIT = 700;
-let dailyApiCount = 0;
-let dailyApiCountDate = '';  // 记录计数所属日期，跨天重置
 
 // ========== 筛选状态 ==========
 let currentSegment = '';
@@ -1365,316 +1505,12 @@ function toggleProps(item) {
 
 // ========== 数据获取 ==========
 // 检查每日API请求是否超限，超限返回true
-function isApiLimitReached() {
-  const today = new Date().toDateString();
-  if (dailyApiCountDate !== today) {
-    dailyApiCount = 0;
-    dailyApiCountDate = today;
-  }
-  if (dailyApiCount >= DAILY_API_LIMIT) {
-    console.warn(`[限流] 今日API请求已达${dailyApiCount}次，超过上限${DAILY_API_LIMIT}，停止请求`);
-    return true;
-  }
-  return false;
-}
-
 // 记录一次API请求
-function countApiRequest() {
-  const today = new Date().toDateString();
-  if (dailyApiCountDate !== today) {
-    dailyApiCount = 0;
-    dailyApiCountDate = today;
-  }
-  dailyApiCount++;
-}
-
-async function fetchWeather(qid) {
-  if (isApiLimitReached()) return null;
-  try {
-    countApiRequest();
-    const url = `https://${API_DOMAIN}/v7/weather/now?location=${qid}&key=${API_KEY}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('API error');
-    const data = await resp.json();
-    return data.code === '200' ? data.now : null;
-  } catch {
-    return null;
-  }
-}
-
 // 将新版预警API的alerts映射为旧版格式（兼容下游代码）
-function mapNewAlertToOld(alert) {
-  // 新版字段：eventType.name, color.code, senderName, headline, description, messageType.code
-  const colorToSeverity = { 'red': '红色', 'orange': '橙色', 'yellow': '黄色', 'blue': '蓝色', 'white': '白色', 'gray': '灰色', 'green': '绿色', 'purple': '紫色', 'black': '黑色' };
-  const severity = colorToSeverity[alert.color?.code] || alert.severity || '蓝色';
-  const typeName = alert.eventType?.name || '';
-  const isActive = alert.messageType?.code !== 'cancel';
-  return {
-    id: alert.id || '',
-    sender: alert.senderName || '',
-    pubTime: alert.issuedTime || '',
-    title: alert.headline || (typeName + severity + '预警'),
-    startTime: alert.effectiveTime || '',
-    endTime: alert.expireTime || '',
-    status: isActive ? 'active' : 'cancel',
-    level: severity,
-    severity: severity,
-    type: alert.eventType?.code || '',
-    typeName: typeName,
-    text: alert.description || alert.instruction || '',
-    headline: alert.headline || '',
-    description: alert.description || '',
-    instruction: alert.instruction || '',
-    source: 'API'
-  };
-}
-
-async function fetchWarnings(qid) {
-  if (isApiLimitReached()) return [];
-  // 如果已知预警API不可用，直接走降级方案
-  if (warningApiStatus === 'failed') {
-    return getBadWeatherFallback(qid);
-  }
-  
-  try {
-    countApiRequest();
-    // 从CITY_DATA查找城市的经纬度
-    const cityEntry = Object.entries(CITY_DATA).find(([_, c]) => c.qid === qid);
-    if (!cityEntry) {
-      console.warn('未找到qid对应的城市:', qid);
-      return [];
-    }
-    const [cityName, cityInfo] = cityEntry;
-    const lat = cityInfo.lat;
-    const lon = cityInfo.lon;
-    
-    // 新版预警API：/weatheralert/v1/current/{lat}/{lon}?key=xxx
-    const url = `https://${WARNING_API_DOMAIN}/weatheralert/v1/current/${lat}/${lon}?key=${WARNING_API_KEY}`;
-    const resp = await fetch(url);
-    
-    if (!resp.ok) {
-      console.warn(`新版预警API返回${resp.status}，尝试备用API`);
-      return tryFallbackWarningApi(qid, lat, lon);
-    }
-    
-    const data = await resp.json();
-    
-    // 新版API用metadata.zeroResult判断是否有数据
-    if (data.metadata) {
-      warningApiStatus = 'ok';
-      if (data.metadata.zeroResult || !data.alerts || data.alerts.length === 0) {
-        return [];
-      }
-      // 映射新版格式为旧版格式
-      return data.alerts.map(mapNewAlertToOld);
-    }
-    
-    // 兼容旧版返回格式（code字段）
-    if (data.code === '200') {
-      warningApiStatus = 'ok';
-      return (data.warning || []).map(w => ({
-        ...w,
-        severity: w.severity || w.level || '蓝色',
-        typeName: w.typeName || w.type || '',
-        text: w.text || w.detail || ''
-      }));
-    }
-    
-    if (data.code === '204') {
-      warningApiStatus = 'ok';
-      return [];
-    }
-    
-    // 其他错误，尝试备用
-    return tryFallbackWarningApi(qid, lat, lon);
-    
-  } catch (e) {
-    console.warn('预警API请求异常:', e.message, '，尝试备用API');
-    return tryFallbackWarningApi(qid);
-  }
-}
-
 // 备用预警API尝试
-async function tryFallbackWarningApi(qid, lat, lon) {
-  try {
-    // 如果没传经纬度，从CITY_DATA查找
-    if (!lat || !lon) {
-      const cityEntry = Object.entries(CITY_DATA).find(([_, c]) => c.qid === qid);
-      if (cityEntry) {
-        lat = cityEntry[1].lat;
-        lon = cityEntry[1].lon;
-      }
-    }
-    if (!lat || !lon) {
-      warningApiStatus = 'failed';
-      return getBadWeatherFallback(qid);
-    }
-    
-    const url = `https://${WARNING_API_DOMAIN_FALLBACK}/weatheralert/v1/current/${lat}/${lon}?key=${WARNING_API_KEY_FALLBACK}`;
-    const resp = await fetch(url);
-    
-    if (!resp.ok) {
-      console.warn('备用预警API也返回错误', resp.status, '，走降级方案');
-      warningApiStatus = 'failed';
-      return getBadWeatherFallback(qid);
-    }
-    
-    const data = await resp.json();
-    
-    if (data.metadata) {
-      warningApiStatus = 'ok';
-      if (data.metadata.zeroResult || !data.alerts || data.alerts.length === 0) {
-        return [];
-      }
-      return data.alerts.map(mapNewAlertToOld);
-    }
-    
-    if (data.code === '200') {
-      warningApiStatus = 'ok';
-      return (data.warning || []).map(w => ({
-        ...w,
-        severity: w.severity || w.level || '蓝色',
-        typeName: w.typeName || w.type || '',
-        text: w.text || w.detail || ''
-      }));
-    }
-    
-    if (data.code === '204') {
-      warningApiStatus = 'ok';
-      return [];
-    }
-    
-    warningApiStatus = 'failed';
-    return getBadWeatherFallback(qid);
-    
-  } catch (e) {
-    console.warn('备用预警API请求异常:', e.message);
-    warningApiStatus = 'failed';
-    return getBadWeatherFallback(qid);
-  }
-}
-
 // 降级方案：通过天气API判断恶劣天气
-async function getBadWeatherFallback(qid) {
-  try {
-    // 优先复用已缓存的天气数据
-    const weather = cityWeatherData[qid];
-    if (!weather || !weather.text) return [];
-    
-    const text = weather.text;
-    
-    // 天气描述→预警类型+严重级别映射
-    const warningMap = [
-      { keywords: ['特大暴雨'], typeName: '暴雨', severity: '红色' },
-      { keywords: ['大暴雨'], typeName: '暴雨', severity: '橙色' },
-      { keywords: ['暴雨'], typeName: '暴雨', severity: '黄色' },
-      { keywords: ['雷阵雨', '雷电', '雷'], typeName: '雷电', severity: '黄色' },
-      { keywords: ['台风'], typeName: '台风', severity: '橙色' },
-      { keywords: ['强对流'], typeName: '强对流', severity: '黄色' },
-      { keywords: ['冰雹'], typeName: '冰雹', severity: '橙色' },
-    ];
-    
-    let matched = null;
-    for (const m of warningMap) {
-      if (m.keywords.some(kw => text.includes(kw))) {
-        matched = m;
-        break;
-      }
-    }
-    
-    // 台风大风等级判断（仅台风类型，大风等级>=8视为台风影响）
-    if (!matched && weather.windScale && parseInt(weather.windScale) >= 10) {
-      matched = { typeName: '台风', severity: parseInt(weather.windScale) >= 12 ? '红色' : '橙色' };
-    }
-    
-    if (!matched) return [];
-    
-    // 检查是否属于FOCUS_WARNING_TYPES
-    if (!FOCUS_WARNING_TYPES.some(ft => matched.typeName.includes(ft))) return [];
-    
-    // 检查是否属于FOCUS_WARNING_LEVELS（过滤蓝色）
-    if (!FOCUS_WARNING_LEVELS.includes(matched.severity)) return [];
-    
-    // 找到对应的城市名称
-    const cityEntry = Object.entries(CITY_DATA).find(([_, c]) => c.qid === qid);
-    const cityName = cityEntry ? cityEntry[0] : qid;
-    
-    return [{
-      id: `fallback_${qid}`,
-      provinceName: weather.provinceName || '',
-      cityName: cityName,
-      title: `${cityName}发布${matched.typeName}${matched.severity}预警`,
-      description: `${text}，温度${weather.temp || ''}℃，${weather.windDir || ''}${weather.windScale || ''}级`,
-      severity: matched.severity,
-      typeName: matched.typeName,
-      text: `天气实况检测到恶劣天气：${text}`,
-      sender: '天气实况降级',
-      source: '降级',
-      status: 'active'
-    }];
-  } catch (e) {
-    console.warn('降级方案异常:', e.message);
-    return [];
-  }
-}
-
-async function fetchForecast(qid) {
-  if (isApiLimitReached()) return null;
-  try {
-    countApiRequest();
-    const url = `https://${API_DOMAIN}/v7/weather/3d?location=${qid}&key=${API_KEY}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('API error');
-    const data = await resp.json();
-    return data.code === '200' ? data.daily : null;
-  } catch {
-    return null;
-  }
-}
-
 // 分批获取天气数据（避免限流）
-async function fetchWeatherBatch(cities, delay = 200) {
-  const results = {};
-  for (let i = 0; i < cities.length; i += 5) {
-    const batch = cities.slice(i, i + 5);
-    const promises = batch.map(async ([_, city]) => {
-      const weather = await fetchWeather(city.qid);
-      if (weather) {
-        results[city.qid] = weather;
-      }
-    });
-    await Promise.all(promises);
-    if (i + 5 < cities.length) {
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-  return results;
-}
-
 // 分批获取预警数据
-async function fetchWarningsBatch(cities, delay = 200) {
-  const results = {};
-  for (let i = 0; i < cities.length; i += 5) {
-    const batch = cities.slice(i, i + 5);
-    const promises = batch.map(async ([_, city]) => {
-      const warnings = await fetchWarnings(city.qid);
-      if (warnings !== null) {
-        const filtered = filterWarnings(warnings);
-        if (filtered.length > 0) {
-          results[city.qid] = { warning: filtered };
-        }
-      }
-    });
-    await Promise.all(promises);
-    if (i + 5 < cities.length) {
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-  return results;
-}
-
-
-
 // ========== 工具函数 ==========
 function getCityWarnings(cityName) {
   const city = CITY_DATA[cityName];
@@ -1896,10 +1732,6 @@ function checkScheduledRefresh() {
   if (todayRefreshed.date !== todayStr) {
     todayRefreshed = { date: todayStr };
   }
-  if (dailyApiCountDate !== todayStr) {
-    dailyApiCount = 0;
-    dailyApiCountDate = todayStr;
-  }
   
   // 整点12:00触发统一刷新
   if (hour === REFRESH_HOUR && minute === 0 && !todayRefreshed[REFRESH_HOUR]) {
@@ -1989,6 +1821,77 @@ function init() {
 
 // 启动
 init();
+
+// ========== 防台风提示数据 ==========
+const TYPHOON_TIPS = {
+  property: {
+    title: '物业管理防台风提示',
+    tips: [
+      '提醒业主/住户在台风到来前检查好门窗是否牢固，及时关好门窗，清理阳台花盆、拖把等易坠物',
+      '对地下车库、配电室等低洼地预备充足的防水沙袋，架设防洪挡板，检查集水井排水设备，备足抽水泵',
+      '清理楼顶平台排水沟、窖井堵塞物，巡查天台、地库等易渗漏内涝部位，及时处理渗漏点，疏通下水道排水口',
+      '完善树木加固，及时清理修剪，劝移树下车辆至地下车库；加固大堂玻璃门、宣传橱窗等玻璃制品',
+      '检查供电线路，防范涉水触电事故'
+    ]
+  },
+  enterprise: {
+    title: '企业财产防台风提示',
+    tips: [
+      '露天财产及时转移到安全地方，无法转移的用防水材料罩盖并垫高处理（垫高≥15cm），易湿损物资存放于二楼及以上',
+      '检查排水系统（建筑物周围排水渠、屋顶排水槽）是否畅通，及时疏通堵塞；所有门窗保持完好且可紧闭，迎风窗加固',
+      '较低地势企业准备应急物品：便携式抽水机、紧急照明、沙袋、防水布、手提工具等，集中于企业中心安全地点',
+      '轻钢/简易结构建筑：检查紧固螺栓锈蚀（及时更换）、焊点完整性（加固）、用帆布遮盖屋面下机器存货、灾前转移简易结构下资产',
+      '地下建筑不应存放贵重财产，入口设置挡水板或沙包，配备应急排水设备及稳定电源',
+      '检查户外附属设施（广告牌、天线、太阳能装置、霓虹灯等）是否紧固，松动立即加固'
+    ]
+  },
+  cargo: {
+    title: '货物运输防台风提示',
+    tips: [
+      '货物发运前对运输工具进行水密性、防风防雨性能检查，做好紧急加固，注意防雨防潮防散防漏',
+      '密切关注台风实时路径和天气预报，尽量避免灾害期间的运输安排',
+      '加强仓库防风防雨措施，保证仓库排水通畅',
+      '运输中转货物及时风险排查，提醒司机谨慎驾驶，风雨较大时及时停靠服务区',
+      '码头等易海水倒灌地区的货物，尽量在灾害来临前提货，避免灾害期间堆存在码头堆场',
+      '无法及时提取的货物，做好重箱转移工作，特别是低洼地区堆放的货物尽快转移'
+    ]
+  },
+  engineering: {
+    title: '在建工程防台风提示',
+    tips: [
+      '临时设施：检查选址是否在地质灾害隐患位置，有无沉降开裂；临建房屋用钢管/钢丝绳防风加固；场地排水通畅',
+      '临时用电：设备安全可靠，满足"一机一闸一箱一漏"，停工时断电；配电箱室防雨；配备应急备用电源',
+      '高边坡深基坑：排水系统通畅，支护有效无沉降开裂，对深基坑有防洪水雨水倒灌措施，抽排设备到位',
+      '桥梁工程：脚手架基础平整夯实并排水，架体整体稳固无倾斜，搭设高度>10m设置缆风绳；设置防雷击防大风措施',
+      '特种设备：起重机械塔吊基础排水有效，基础螺栓螺母数量齐全连结牢靠，安全装置灵敏有效',
+      '路基工程：涵洞逐一排查保证排水畅通，路基排水设施形成完整有效系统'
+    ]
+  }
+};
+
+function showTyphoonTip(type) {
+  const data = TYPHOON_TIPS[type];
+  if (!data) return;
+  
+  // Remove existing modal if any
+  const existing = document.getElementById('tipModalOverlay');
+  if (existing) existing.remove();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'tipModalOverlay';
+  overlay.className = 'tip-modal-overlay active';
+  overlay.innerHTML = `
+    <div class="tip-modal">
+      <span class="tip-close" onclick="document.getElementById('tipModalOverlay').remove()">✕</span>
+      <h3>🌀 ${data.title}</h3>
+      ${data.tips.map(tip => `<div class="tip-item">${tip}</div>`).join('')}
+    </div>
+  `;
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+  document.body.appendChild(overlay);
+}
 </script>
 </body>
 </html>
