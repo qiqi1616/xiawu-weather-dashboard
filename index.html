@@ -1,4 +1,5 @@
 <!-- Rebuild trigger -->
+<!-- Rebuild trigger -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -657,6 +658,248 @@ body {
   font-size: 12px;
   margin-left: 8px;
 }
+
+/* ========== 新增功能样式 ========== */
+
+/* 折叠面板通用样式 */
+.collapsible-panel {
+  margin-top: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: rgba(59, 130, 246, 0.08);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+  user-select: none;
+}
+.collapsible-header:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+.collapsible-header .ch-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.collapsible-header .ch-arrow {
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: transform 0.3s;
+}
+.collapsible-header.open .ch-arrow {
+  transform: rotate(180deg);
+}
+.collapsible-body {
+  display: none;
+  padding: 12px 14px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.collapsible-body.open {
+  display: block;
+}
+.collapsible-body::-webkit-scrollbar { width: 4px; }
+.collapsible-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* 灾后评估 */
+.post-disaster-item {
+  padding: 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--warning-orange);
+  font-size: 12px;
+}
+.post-disaster-item .pd-city {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--warning-orange);
+  margin-bottom: 4px;
+}
+.post-disaster-item .pd-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  margin: 3px 0;
+}
+.post-disaster-item .pd-row span { color: var(--text-primary); }
+.post-disaster-item .pd-action {
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: rgba(59,130,246,0.15);
+  border-radius: 4px;
+  color: var(--accent-blue);
+  font-size: 11px;
+}
+.post-disaster-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 16px 0;
+}
+
+/* 未来展望 */
+.forecast-outlook-city {
+  margin-bottom: 10px;
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+}
+.forecast-outlook-city .foc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.forecast-outlook-day {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 11px;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.forecast-outlook-day:last-child { border-bottom: none; }
+.fo-date { color: var(--text-secondary); min-width: 45px; }
+.fo-icon { font-size: 14px; }
+.fo-text { flex: 1; color: var(--text-primary); }
+.fo-temp { color: var(--warning-orange); font-weight: 500; min-width: 60px; text-align: right; }
+.risk-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+}
+.risk-dot.green { background: #10B981; }
+.risk-dot.yellow { background: #EAB308; }
+.risk-dot.orange { background: #F97316; }
+.risk-dot.red { background: #EF4444; }
+
+/* 预警统计 */
+.stat-bar-container { margin-bottom: 8px; }
+.stat-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+.stat-bar-label span:last-child { color: var(--text-primary); font-weight: 500; }
+.stat-bar-track {
+  height: 14px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+.stat-bar-fill.red { background: linear-gradient(90deg, #EF4444, #f87171); }
+.stat-bar-fill.orange { background: linear-gradient(90deg, #F97316, #fb923c); }
+.stat-bar-fill.yellow { background: linear-gradient(90deg, #EAB308, #facc15); }
+.stat-bar-fill.blue { background: linear-gradient(90deg, #3B82F6, #60a5fa); }
+.stat-bar-fill.cyan { background: linear-gradient(90deg, #06B6D4, #22d3ee); }
+.stat-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin: 12px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.stat-section-title:first-child { margin-top: 0; }
+.stat-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 16px 0;
+}
+.stat-trend-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 60px;
+  padding: 4px 0;
+}
+.stat-trend-bar {
+  flex: 1;
+  background: linear-gradient(180deg, var(--accent-cyan), rgba(6,182,212,0.3));
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+  position: relative;
+  transition: height 0.5s ease;
+}
+.stat-trend-bar:hover { opacity: 0.8; }
+.stat-trend-labels {
+  display: flex;
+  gap: 3px;
+  font-size: 9px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.stat-trend-labels span { flex: 1; }
+
+/* 导出建议书按钮 */
+.export-advice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(6,182,212,0.2));
+  border: 1px solid rgba(59,130,246,0.4);
+  color: var(--accent-cyan);
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+.export-advice-btn:hover {
+  background: linear-gradient(135deg, rgba(59,130,246,0.35), rgba(6,182,212,0.35));
+  border-color: var(--accent-cyan);
+}
+
+
+/* ========== 手机端响应式优化 ========== */
+@media (max-width: 900px) {
+  .container { flex-direction: column; }
+  .map-area { width: 100%; min-height: 50vh; }
+  aside { width: 100%; max-height: none; position: relative; }
+  .city-list { max-height: 200px; }
+  .collapsible-body { max-height: 250px; }
+  .stat-trend-row { height: 40px; }
+  .risk-advice-content { width: 95% !important; max-width: 95% !important; }
+  .tooltip { font-size: 11px; }
+  .warning-detail-popup { width: 95%; left: 2.5% !important; }
+}
+@media (max-width: 480px) {
+  .header-bar { flex-direction: column; gap: 8px; }
+  .header-bar h1 { font-size: 16px; }
+  .map-area { min-height: 40vh; }
+  aside { padding: 8px; }
+  .section-title { font-size: 13px; }
+  .collapsible-header { padding: 10px 12px; }
+  .collapsible-header .ch-title { font-size: 12px; }
+  .collapsible-body { padding: 8px 10px; max-height: 200px; }
+  .post-disaster-item { padding: 8px; font-size: 11px; }
+  .forecast-outlook-day { font-size: 10px; }
+  .stat-bar-label { font-size: 10px; }
+  .stat-trend-row { height: 30px; }
+  .stat-trend-labels { font-size: 8px; }
+  .risk-advice-content { width: 98% !important; max-width: 98% !important; padding: 12px !important; }
+  .export-advice-btn { width: 100%; justify-content: center; font-size: 12px; }
+}
+
 </style>
 </head>
 <body>
@@ -836,6 +1079,38 @@ body {
 
     <h4 class="section-title">恶劣天气影响评估</h4>
     <div id="impactAssessment"></div>
+    <!-- 灾后评估面板 -->
+    <div class="collapsible-panel">
+      <div class="collapsible-header" onclick="togglePanel(this)">
+        <span class="ch-title">🔍 灾后评估</span>
+        <span class="ch-arrow">▼</span>
+      </div>
+      <div class="collapsible-body" id="postDisasterBody">
+        <div id="postDisasterList"><div class="post-disaster-empty">暂无灾后事件记录</div></div>
+      </div>
+    </div>
+
+    <!-- 未来展望面板 -->
+    <div class="collapsible-panel">
+      <div class="collapsible-header" onclick="togglePanel(this)">
+        <span class="ch-title">🔭 未来展望</span>
+        <span class="ch-arrow">▼</span>
+      </div>
+      <div class="collapsible-body" id="forecastOutlookBody">
+        <div id="forecastOutlookList"><div class="stat-empty">暂无预报数据</div></div>
+      </div>
+    </div>
+
+    <!-- 预警统计面板 -->
+    <div class="collapsible-panel">
+      <div class="collapsible-header" onclick="togglePanel(this)">
+        <span class="ch-title">📊 预警统计</span>
+        <span class="ch-arrow">▼</span>
+      </div>
+      <div class="collapsible-body" id="warningStatsBody">
+        <div id="warningStatsContent"><div class="stat-empty">暂无统计数据</div></div>
+      </div>
+    </div>
   </aside>
 </div>
 
@@ -2277,6 +2552,430 @@ function showRiskAdvice(cityName, targetName) {
 function closeRiskAdvice() {
   document.getElementById('riskAdviceModal').style.display = 'none';
 }
+
+// ========== 功能1: 灾后快速评估看板 ==========
+const POST_DISASTER_KEY = 'ld_post_disaster_events';
+
+function getPostDisasterEvents() {
+  try {
+    return JSON.parse(localStorage.getItem(POST_DISASTER_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function savePostDisasterEvents(events) {
+  localStorage.setItem(POST_DISASTER_KEY, JSON.stringify(events.slice(-50)));
+}
+
+function checkPostDisasterEvents() {
+  const prevKey = 'ld_prev_warning_cities';
+  let prevCities = {};
+  try { prevCities = JSON.parse(localStorage.getItem(prevKey) || '{}'); } catch(e) {}
+  
+  const currentCities = {};
+  Object.keys(cityWarningData).forEach(qid => {
+    const city = Object.keys(CITY_DATA).find(c => CITY_DATA[c].qid === qid);
+    if (city) {
+      const warnings = cityWarningData[qid]?.warning?.filter(w => FOCUS_WARNING_TYPES.includes(w.typeName || w.type) && FOCUS_WARNING_LEVELS.includes(w.severity)) || [];
+      if (warnings.length > 0) {
+        currentCities[city] = { qid, warnings, timestamp: new Date().toISOString() };
+      }
+    }
+  });
+  
+  // Check for disappeared warnings (post-disaster events)
+  const events = getPostDisasterEvents();
+  Object.keys(prevCities).forEach(city => {
+    if (!currentCities[city] && CITY_DATA[city]) {
+      const prev = prevCities[city];
+      const maxSeverity = prev.warnings.reduce((max, w) => {
+        const order = {'红色':3,'橙色':2,'黄色':1};
+        return (order[w.severity]||0) > (order[max]||0) ? w.severity : max;
+      }, '黄色');
+      
+      events.push({
+        city: city,
+        qid: prev.qid,
+        propCount: CITY_DATA[city].count,
+        warningTypes: prev.warnings.map(w => w.typeName || w.type).join('、'),
+        maxSeverity: maxSeverity,
+        startTime: prev.timestamp,
+        endTime: new Date().toISOString(),
+        suggestedActions: getSuggestedActions(maxSeverity, CITY_DATA[city].count)
+      });
+    }
+  });
+  
+  savePostDisasterEvents(events);
+  localStorage.setItem(prevKey, JSON.stringify(currentCities));
+  renderPostDisasterPanel();
+}
+
+function getSuggestedActions(severity, propCount) {
+  const actions = [];
+  if (severity === '红色') {
+    actions.push('🔴 立即启动现场查勘');
+    actions.push('📞 24小时内客户回访');
+    actions.push('📋 损失评估报告编制');
+  } else if (severity === '橙色') {
+    actions.push('🟠 48小时内现场查勘');
+    actions.push('📞 3日内客户回访');
+    actions.push('📊 关注理赔动态');
+  } else {
+    actions.push('🟡 一周内客户回访');
+    actions.push('📊 持续关注天气变化');
+  }
+  if (propCount >= 10) {
+    actions.push('⚠️ 高密度标的区域，建议专项排查');
+  }
+  return actions;
+}
+
+function renderPostDisasterPanel() {
+  const events = getPostDisasterEvents();
+  const container = document.getElementById('postDisasterList');
+  if (!container) return;
+  
+  if (events.length === 0) {
+    container.innerHTML = '<div class="post-disaster-empty">暂无灾后事件记录</div>';
+    return;
+  }
+  
+  let html = '';
+  events.slice().reverse().slice(0, 20).forEach(ev => {
+    const duration = ev.startTime ? Math.round((new Date(ev.endTime) - new Date(ev.startTime)) / 3600000) : '-';
+    html += '<div class="post-disaster-item">';
+    html += `<div class="pd-city">${ev.city}</div>`;
+    html += `<div class="pd-row"><span>预警类型：</span><span>${ev.warningTypes}</span></div>`;
+    html += `<div class="pd-row"><span>最大等级：</span><span style="color:${ev.maxSeverity==='红色'?'#EF4444':ev.maxSeverity==='橙色'?'#F97316':'#EAB308'}">${ev.maxSeverity}</span></div>`;
+    html += `<div class="pd-row"><span>影响标的：</span><span>${ev.propCount}个</span></div>`;
+    html += `<div class="pd-row"><span>持续时长：</span><span>${duration}小时</span></div>`;
+    html += '<div class="pd-action">';
+    ev.suggestedActions.forEach(a => { html += `<div>${a}</div>`; });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+// ========== 功能2: 导出防灾建议书PDF ==========
+function exportAdvicePDF() {
+  const modalContent = document.getElementById('riskAdviceContent');
+  if (!modalContent || !modalContent.innerHTML.trim()) {
+    alert('无风险提示内容可导出');
+    return;
+  }
+  
+  // Get city name from the modal context
+  const cityTitle = document.querySelector('.risk-advice-title');
+  const cityName = currentRiskCity || '未知城市';
+  const contentHTML = modalContent.innerHTML;
+  const now = new Date().toLocaleString('zh-CN');
+  
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  printWindow.document.write(`<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>防灾建议书 - ${cityName}</title>
+<style>
+  @page { margin: 2cm; }
+  body { font-family: 'Microsoft YaHei', 'SimSun', sans-serif; color: #333; line-height: 1.8; padding: 40px; max-width: 800px; margin: 0 auto; }
+  .header { text-align: center; border-bottom: 3px solid #1a56db; padding-bottom: 20px; margin-bottom: 30px; }
+  .header h1 { font-size: 22px; color: #1a56db; margin: 0; }
+  .header .subtitle { font-size: 14px; color: #666; margin-top: 8px; }
+  .header .meta { font-size: 12px; color: #999; margin-top: 12px; }
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 16px; font-weight: bold; color: #1a56db; border-left: 4px solid #1a56db; padding-left: 10px; margin-bottom: 12px; }
+  .warning-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 13px; margin-right: 8px; font-weight: 500; }
+  .warning-badge.red { background: #fee2e2; color: #dc2626; }
+  .warning-badge.orange { background: #ffedd5; color: #ea580c; }
+  .warning-badge.yellow { background: #fef9c3; color: #ca8a04; }
+  .advice-list { list-style: none; padding: 0; }
+  .advice-list li { padding: 6px 0 6px 20px; position: relative; font-size: 14px; }
+  .advice-list li:before { content: "•"; position: absolute; left: 4px; color: #1a56db; font-weight: bold; }
+  .target-info { background: #f0f7ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; margin-bottom: 16px; }
+  .target-info .name { font-weight: bold; color: #1e40af; font-size: 15px; }
+  .footer { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 16px; text-align: center; font-size: 11px; color: #999; }
+  @media print { body { padding: 0; } }
+</style></head><body>
+<div class="header">
+  <h1>🛡️ 防灾建议书</h1>
+  <div class="subtitle">中国人寿财险厦门市分公司 · 厦钨集团标的监控</div>
+  <div class="meta">生成时间：${now}</div>
+</div>
+<div class="section">
+  <div class="section-title">📍 城市：${cityName}</div>
+  ${contentHTML}
+</div>
+<div class="footer">
+  <p>本建议书由天气预警监控看板自动生成，仅供参考。如有疑问请联系保险人。</p>
+  <p>© 中国人寿财险厦门市分公司</p>
+</div>
+</body></html>`);
+  printWindow.document.close();
+  setTimeout(() => { printWindow.print(); }, 500);
+}
+
+// ========== 功能3: 多日风险前瞻面板 ==========
+function getWeatherRiskLevel(text) {
+  if (!text) return 'green';
+  const t = text.toLowerCase();
+  if (/暴雨|雷暴|冰雹|台风/.test(t)) return 'red';
+  if (/中雨|大雨|阵雨|雷阵雨|强对流|沙尘暴/.test(t)) return 'orange';
+  if (/小雨|阵雨|阴|雾|霾|小雪|雨夹雪/.test(t)) return 'yellow';
+  return 'green';
+}
+
+function getWeatherIcon(text) {
+  if (!text) return '🌤️';
+  if (/暴雨/.test(text)) return '🌊';
+  if (/大雨|中雨/.test(text)) return '🌧️';
+  if (/小雨|阵雨/.test(text)) return '🌦️';
+  if (/雷暴|雷阵雨|强对流/.test(text)) return '⛈️';
+  if (/冰雹/.test(text)) return '🧊';
+  if (/台风/.test(text)) return '🌀';
+  if (/阴/.test(text)) return '☁️';
+  if (/多云/.test(text)) return '⛅';
+  if (/雪/.test(text)) return '🌨️';
+  if (/雾|霾/.test(text)) return '🌫️';
+  if (/晴/.test(text)) return '☀️';
+  return '🌤️';
+}
+
+function renderForecastOutlook() {
+  const container = document.getElementById('forecastOutlookList');
+  if (!container) return;
+  
+  // Get cities with properties that have forecast data
+  const cityForecasts = [];
+  Object.keys(CITY_DATA).forEach(cityName => {
+    const city = CITY_DATA[cityName];
+    const forecasts = cityForecastData[city.qid] || [];
+    if (forecasts.length > 0) {
+      // Calculate max risk across all forecast days
+      let maxRisk = 0;
+      forecasts.forEach(f => {
+        const level = getWeatherRiskLevel(f.text || f.description || '');
+        const riskOrder = {'green':0,'yellow':1,'orange':2,'red':3};
+        if ((riskOrder[level]||0) > maxRisk) maxRisk = riskOrder[level]||0;
+      });
+      cityForecasts.push({ city: cityName, forecasts, maxRisk });
+    }
+  });
+  
+  // Sort by risk level (high to low)
+  cityForecasts.sort((a, b) => b.maxRisk - a.maxRisk);
+  
+  if (cityForecasts.length === 0) {
+    container.innerHTML = '<div class="stat-empty">暂无预报数据</div>';
+    return;
+  }
+  
+  let html = '';
+  cityForecasts.slice(0, 30).forEach(cf => {
+    const riskColors = ['green','yellow','orange','red'];
+    html += '<div class="forecast-outlook-city">';
+    html += `<div class="foc-name"><span class="risk-dot ${riskColors[cf.maxRisk]}"></span> ${cf.city} <span style="font-size:11px;color:var(--text-secondary)">(${CITY_DATA[cf.city].count}标的)</span></div>`;
+    cf.forecasts.slice(0, 3).forEach(f => {
+      const text = f.text || f.description || '未知';
+      const riskLevel = getWeatherRiskLevel(text);
+      const icon = getWeatherIcon(text);
+      const dateStr = f.date ? f.date.substring(5) : '';
+      const tempMin = f.tempMin != null ? Math.round(f.tempMin) : '-';
+      const tempMax = f.tempMax != null ? Math.round(f.tempMax) : '-';
+      html += `<div class="forecast-outlook-day">`;
+      html += `<span class="fo-date">${dateStr}</span>`;
+      html += `<span class="risk-dot ${riskLevel}"></span>`;
+      html += `<span class="fo-icon">${icon}</span>`;
+      html += `<span class="fo-text">${text}</span>`;
+      html += `<span class="fo-temp">${tempMin}°~${tempMax}°</span>`;
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ========== 功能4: 预警历史统计 ==========
+const WARNING_STATS_KEY = 'ld_warning_stats';
+
+function getWarningStats() {
+  try {
+    return JSON.parse(localStorage.getItem(WARNING_STATS_KEY) || '{}');
+  } catch(e) { return {}; }
+}
+
+function saveWarningStats(stats) {
+  localStorage.setItem(WARNING_STATS_KEY, JSON.stringify(stats));
+}
+
+function recordWarningStats() {
+  const stats = getWarningStats();
+  if (!stats.byType) stats.byType = {};
+  if (!stats.byCity) stats.byCity = {};
+  if (!stats.daily) stats.daily = {};
+  
+  const today = new Date().toISOString().substring(0, 10);
+  const recordedKey = 'ld_recorded_warnings_' + today;
+  let alreadyRecorded = {};
+  try { alreadyRecorded = JSON.parse(localStorage.getItem(recordedKey) || '{}'); } catch(e) {}
+  
+  let newRecords = false;
+  
+  Object.entries(cityWarningData).forEach(([qid, data]) => {
+    const city = Object.keys(CITY_DATA).find(c => CITY_DATA[c].qid === qid);
+    if (!city) return;
+    
+    const warnings = data.warning || [];
+    warnings.forEach(w => {
+      if (!FOCUS_WARNING_TYPES.includes(w.typeName || w.type)) return;
+      if (!FOCUS_WARNING_LEVELS.includes(w.severity)) return;
+      
+      const wKey = `${city}_${w.typeName || w.type}_${w.severity}`;
+      if (alreadyRecorded[wKey]) return;
+      alreadyRecorded[wKey] = true;
+      newRecords = true;
+      
+      const typeName = w.typeName || w.type;
+      stats.byType[typeName] = (stats.byType[typeName] || 0) + 1;
+      stats.byCity[city] = (stats.byCity[city] || 0) + 1;
+      stats.daily[today] = (stats.daily[today] || 0) + 1;
+    });
+  });
+  
+  // Clean old daily data (keep last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const cutoff = thirtyDaysAgo.toISOString().substring(0, 10);
+  Object.keys(stats.daily).forEach(d => {
+    if (d < cutoff) delete stats.daily[d];
+  });
+  
+  if (newRecords) {
+    saveWarningStats(stats);
+    localStorage.setItem(recordedKey, JSON.stringify(alreadyRecorded));
+  }
+  
+  renderWarningStats(stats);
+}
+
+function renderWarningStats(stats) {
+  const container = document.getElementById('warningStatsContent');
+  if (!container) return;
+  
+  if (!stats.byType) stats.byType = {};
+  if (!stats.byCity) stats.byCity = {};
+  if (!stats.daily) stats.daily = {};
+  
+  const hasData = Object.keys(stats.byType).length > 0 || Object.keys(stats.byCity).length > 0;
+  if (!hasData) {
+    container.innerHTML = '<div class="stat-empty">暂无统计数据<br><span style="font-size:10px;color:#64748b">数据将在预警出现后自动记录</span></div>';
+    return;
+  }
+  
+  let html = '<div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;text-align:right">本月预警统计</div>';
+  
+  // By Type
+  html += '<div class="stat-section-title">📋 预警类型分布</div>';
+  const maxType = Math.max(...Object.values(stats.byType), 1);
+  const typeColors = {'雷电':'orange','暴雨':'blue','台风':'red','强对流':'yellow','冰雹':'cyan'};
+  Object.entries(stats.byType).sort((a,b) => b[1]-a[1]).forEach(([type, count]) => {
+    const pct = Math.round(count / maxType * 100);
+    const color = typeColors[type] || 'cyan';
+    html += `<div class="stat-bar-container">`;
+    html += `<div class="stat-bar-label"><span>${type}</span><span>${count}次</span></div>`;
+    html += `<div class="stat-bar-track"><div class="stat-bar-fill ${color}" style="width:${pct}%"></div></div>`;
+    html += '</div>';
+  });
+  
+  // By City
+  html += '<div class="stat-section-title">🏙️ 城市预警频次</div>';
+  const cityEntries = Object.entries(stats.byCity).sort((a,b) => b[1]-a[1]).slice(0, 10);
+  const maxCity = Math.max(...cityEntries.map(e => e[1]), 1);
+  cityEntries.forEach(([city, count]) => {
+    const pct = Math.round(count / maxCity * 100);
+    html += `<div class="stat-bar-container">`;
+    html += `<div class="stat-bar-label"><span>${city}</span><span>${count}次</span></div>`;
+    html += `<div class="stat-bar-track"><div class="stat-bar-fill cyan" style="width:${pct}%"></div></div>`;
+    html += '</div>';
+  });
+  
+  // Trend (last 7 days)
+  html += '<div class="stat-section-title">📈 近7天预警趋势</div>';
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().substring(0, 10));
+  }
+  const dayValues = days.map(d => stats.daily[d] || 0);
+  const maxDay = Math.max(...dayValues, 1);
+  
+  html += '<div class="stat-trend-row">';
+  dayValues.forEach(v => {
+    const h = Math.max(2, Math.round(v / maxDay * 56));
+    html += `<div class="stat-trend-bar" style="height:${h}px" title="${v}次"></div>`;
+  });
+  html += '</div>';
+  html += '<div class="stat-trend-labels">';
+  days.forEach(d => {
+    html += `<span>${d.substring(5)}</span>`;
+  });
+  html += '</div>';
+  
+  container.innerHTML = html;
+}
+
+// ========== 折叠面板切换 ==========
+function togglePanel(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// ========== 在数据刷新后调用 ==========
+var currentRiskCity = '';
+var _originalShowRiskAdvice = typeof showRiskAdvice === 'function' ? showRiskAdvice : null;
+
+// Hook into showRiskAdvice to track current city
+(function() {
+  var origShow = window.showRiskAdvice;
+  window.showRiskAdvice = function(cityName, targetName) {
+    currentRiskCity = cityName;
+    if (origShow) origShow(cityName, targetName);
+  };
+})();
+
+// ========== 扩展数据刷新钩子 ==========
+var _originalRefreshData = typeof refreshData === 'function' ? refreshData : null;
+var _refreshHookInstalled = false;
+
+function installRefreshHook() {
+  if (_refreshHookInstalled) return;
+  
+  // Override refreshData to add our hooks
+  var origRefresh = window.refreshData;
+  if (!origRefresh) return;
+  
+  window.refreshData = async function() {
+    await origRefresh();
+    // After data is refreshed, run our features
+    try {
+      checkPostDisasterEvents();
+      renderForecastOutlook();
+      recordWarningStats();
+    } catch(e) {
+      console.error('[新功能] 刷新钩子错误:', e);
+    }
+  };
+  _refreshHookInstalled = true;
+}
+
+// Install hook and run initial render
+installRefreshHook();
+setTimeout(function() {
+  checkPostDisasterEvents();
+  renderForecastOutlook();
+  recordWarningStats();
+}, 2000);
+
 </script>
 
 <!-- 风险提示模态框 -->
@@ -2287,6 +2986,7 @@ function closeRiskAdvice() {
       <button class="risk-advice-close" onclick="closeRiskAdvice()">✕</button>
     </div>
     <div id="riskAdviceContent"></div>
+    <button class="export-advice-btn" onclick="exportAdvicePDF()">📄 导出建议书</button>
   </div>
 </div>
 </body>
