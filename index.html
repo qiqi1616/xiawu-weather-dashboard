@@ -989,6 +989,11 @@ function renderCityList() {
   }
   
   sortedCities.forEach((cityName) => {
+    // 只显示有橙色或红色预警的城市
+    const _cityWarningsForFilter = getAllWarningsForCity(cityName);
+    const _hasOrangeOrRed = _cityWarningsForFilter.some(w => w.severity === '橙色' || w.severity === '红色');
+    if (!_hasOrangeOrRed) return;
+    
     const city = CITY_DATA[cityName];
     const filteredProps = getFilteredProps(cityName);
     if (filteredProps.length === 0) return;
@@ -1153,13 +1158,19 @@ function renderSummary() {
     const warnings = cityWarningData[city.qid]?.warning || [];
     const hasActiveWarning = warnings.some(w => w.status === 'active');
     
-    if (hasActiveWarning) {
+    // 只统计有橙色或红色预警的城市
+    const hasOrangeOrRed = warnings.some(w => w.status === 'active' && (w.severity === '橙色' || w.severity === '红色'));
+    
+    if (hasOrangeOrRed) {
       affectedCitiesSet.add(cityName);
     }
     
-    const filteredProps = getFilteredProps(cityName);
-    if (filteredProps.length > 0) {
-      totalProps += filteredProps.length;
+    // 只统计有橙色/红色预警城市的标的
+    if (hasOrangeOrRed) {
+      const filteredProps = getFilteredProps(cityName);
+      if (filteredProps.length > 0) {
+        totalProps += filteredProps.length;
+      }
     }
   });
   
