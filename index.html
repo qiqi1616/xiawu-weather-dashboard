@@ -539,6 +539,124 @@ body {
   margin: 0 2px;
   animation: pulse-flag 2s ease-in-out infinite;
 }
+
+/* 风险提示模态框 */
+.risk-advice-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 10000;
+}
+.risk-advice-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.risk-advice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.risk-advice-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.risk-advice-close {
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+.risk-advice-close:hover {
+  background: rgba(255,255,255,0.1);
+}
+.risk-advice-section {
+  margin-bottom: 16px;
+}
+.risk-advice-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.risk-advice-warning-info {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+.risk-advice-warning-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 6px;
+}
+.risk-advice-warning-badge.red { background: rgba(239,68,68,0.2); color: #EF4444; }
+.risk-advice-warning-badge.orange { background: rgba(249,115,22,0.2); color: #F97316; }
+.risk-advice-warning-badge.yellow { background: rgba(234,179,8,0.2); color: #EAB308; }
+.risk-advice-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.risk-advice-list li {
+  padding: 6px 0 6px 20px;
+  position: relative;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+.risk-advice-list li:before {
+  content: "•";
+  position: absolute;
+  left: 6px;
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+.risk-advice-target-name {
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+.risk-advice-insurance-type {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(6,182,212,0.15);
+  color: var(--accent-cyan);
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 8px;
+}
 </style>
 </head>
 <body>
@@ -1234,6 +1352,16 @@ function renderCityList() {
       });
     });
     
+    // Add click handler to city name for risk advice
+    const cityNameEl = item.querySelector('.city-name');
+    if (cityNameEl) {
+      cityNameEl.style.cursor = 'pointer';
+      cityNameEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showRiskAdvice(cityName);
+      });
+    }
+    
     container.appendChild(item);
   });
 }
@@ -1891,6 +2019,275 @@ function showTyphoonTip(type) {
   });
   document.body.appendChild(overlay);
 }
+
+// 风险提示数据模板
+const RISK_ADVICE_TEMPLATES = {
+  thunderstorm: {
+    name: '雷电预警',
+    icon: '⚡',
+    engineering: [
+      '立即停止所有户外高空作业和起重吊装作业',
+      '切断施工现场临时用电，做好电气设备防雷保护',
+      '检查脚手架、模板等临时设施的防雷接地装置',
+      '人员撤离至有防雷设施的建筑物内，避免在大树下、金属设备旁避雨',
+      '加强施工现场巡视，发现隐患及时处置'
+    ],
+    property_liability: [
+      '检查物业区域内避雷设施是否完好有效',
+      '提醒业主关闭门窗，切断非必要电源',
+      '加强巡查，重点关注配电房、电梯机房等重要设施',
+      '准备应急发电设备，防止雷击导致停电',
+      '如有雷击损毁情况，及时拍照取证并报案'
+    ],
+    cargo: [
+      '雷电天气暂停露天装卸作业',
+      '检查仓库避雷设施，确保货物安全',
+      '对易受雷击影响的精密仪器、电子设备加强防护',
+      '运输车辆应停放在有防雷设施的场所',
+      '如货物遭雷击损坏，及时拍照取证'
+    ],
+    enterprise_property: [
+      '立即停止户外作业，人员撤离至室内',
+      '检查厂房避雷设施是否完好',
+      '切断非必要电源，保护电子设备和精密仪器',
+      '加强对仓库、生产车间的巡查',
+      '如有雷击造成的设备损坏，及时拍照取证并报案'
+    ]
+  },
+  rainstorm: {
+    name: '暴雨预警',
+    icon: '🌧️',
+    engineering: [
+      '停止土方开挖、边坡作业等易受雨水影响的工序',
+      '检查基坑支护、排水系统，防止塌方和积水',
+      '加固临时设施，做好防风防雨措施',
+      '对建筑材料采取防雨防潮措施',
+      '安排专人值守，密切关注雨情和险情',
+      '准备抽排水设备和应急物资'
+    ],
+    property_liability: [
+      '检查地下室、车库排水泵是否正常运行',
+      '准备沙袋、挡水板等防汛物资',
+      '对低洼区域的物业设施采取防水措施',
+      '加强巡查，重点关注屋顶、外墙渗漏情况',
+      '提醒业主将车辆移至高处，避免水淹',
+      '如有水浸情况，及时排水并拍照取证'
+    ],
+    cargo: [
+      '检查仓库防水情况，确保货物垫高存放',
+      '对易受潮货物加强防护，必要时转移至安全区域',
+      '运输车辆避免涉水行驶，选择安全路线',
+      '货物装卸应在有遮挡的场所进行',
+      '如货物被水浸泡，及时拍照取证并报案'
+    ],
+    enterprise_property: [
+      '检查厂房、仓库屋顶和墙体防水情况',
+      '对低洼区域的设备、物资采取防水措施',
+      '准备抽排水设备，确保排水畅通',
+      '加强对配电房、仓库等重点区域的巡查',
+      '如有水浸损失，及时拍照取证并报案'
+    ]
+  },
+  typhoon: {
+    name: '台风预警',
+    icon: '🌀',
+    engineering: [
+      '全面停止户外施工作业，特别是高空作业和吊装作业',
+      '加固脚手架、塔吊、模板等临时设施，必要时拆除',
+      '对施工现场的建筑材料进行固定或转移至室内',
+      '检查工地围挡、临时板房的抗风能力',
+      '人员全部撤离至安全场所，严禁返回',
+      '安排专人值守，密切关注台风动态',
+      '台风过后全面检查，确认安全后方可复工'
+    ],
+    property_liability: [
+      '检查物业区域内所有门窗、幕墙是否牢固',
+      '加固或拆除户外广告牌、花盆等易坠落物品',
+      '检查屋顶、阳台排水口，防止堵塞积水',
+      '地下车库入口准备防汛沙袋和挡水板',
+      '提醒业主关好门窗，将车辆移至安全区域',
+      '安排应急抢险队伍待命',
+      '台风过后及时清理倒伏树木、坠落物'
+    ],
+    cargo: [
+      '停止所有户外装卸作业',
+      '检查仓库门窗、屋顶是否牢固，防止风雨侵入',
+      '对易受风损的货物采取加固措施',
+      '运输车辆应停放在避风场所，远离广告牌、大树',
+      '暂停台风影响区域的运输业务',
+      '如货物受损，及时拍照取证'
+    ],
+    enterprise_property: [
+      '加固厂房门窗、屋顶，检查排水系统',
+      '对户外设备、广告牌、临时设施进行加固或拆除',
+      '将重要物资、设备转移至安全区域',
+      '准备应急物资，安排值班人员',
+      '台风期间人员撤离至安全场所',
+      '台风过后全面检查损失情况，及时报案'
+    ]
+  },
+  strong_gust: {
+    name: '强对流预警',
+    icon: '💨',
+    engineering: [
+      '停止高空作业和起重吊装作业',
+      '加固脚手架、模板等临时设施',
+      '对建筑材料进行固定，防止被风吹落',
+      '人员撤离至安全区域',
+      '加强现场巡查，发现隐患及时处置'
+    ],
+    property_liability: [
+      '检查物业区域内容易被风吹落的物品',
+      '加固或移除户外悬挂物、花盆等',
+      '提醒业主关好门窗',
+      '加强巡查，及时清理坠落物',
+      '如有损坏，及时拍照取证'
+    ],
+    cargo: [
+      '暂停户外装卸作业',
+      '检查仓库门窗是否牢固',
+      '对易受风损的货物采取防护措施',
+      '运输车辆应停放在避风场所',
+      '如货物受损，及时拍照取证'
+    ],
+    enterprise_property: [
+      '加固厂房门窗和临时设施',
+      '对户外设备、广告牌进行加固',
+      '将易受风损的物资转移至室内',
+      '加强巡查，发现隐患及时处置',
+      '如有损失，及时拍照取证并报案'
+    ]
+  },
+  hail: {
+    name: '冰雹预警',
+    icon: '🧊',
+    engineering: [
+      '停止户外施工作业',
+      '对暴露在外的设备、材料采取防护措施',
+      '人员撤离至室内安全区域',
+      '检查临时设施的抗冲击能力',
+      '如有损坏，及时拍照取证'
+    ],
+    property_liability: [
+      '提醒业主将车辆停放在有遮挡的场所',
+      '检查玻璃幕墙、天窗等易受损部位',
+      '对户外设施采取防护措施',
+      '准备应急抢修物资',
+      '如有损坏，及时拍照取证'
+    ],
+    cargo: [
+      '将货物转移至室内或有遮挡的场所',
+      '对露天存放的货物采取防护措施',
+      '运输车辆应停放在有遮挡的场所',
+      '如货物被冰雹砸损，及时拍照取证',
+      '统计损失情况，准备报案材料'
+    ],
+    enterprise_property: [
+      '将户外设备、物资转移至室内',
+      '对厂房天窗、采光带采取防护措施',
+      '加强对仓库的巡查',
+      '如有设备、货物被冰雹损坏，及时拍照取证',
+      '统计损失情况，准备报案材料'
+    ]
+  }
+};
+
+function getInsuranceTypeByTargetName(targetName) {
+  if (!targetName) return 'enterprise_property';
+  if (targetName.includes('工程')) return 'engineering';
+  if (targetName.includes('物业')) return 'property_liability';
+  if (targetName.includes('物流') || targetName.includes('货运')) return 'cargo';
+  return 'enterprise_property';
+}
+
+function getInsuranceTypeName(insuranceType) {
+  const names = {
+    'engineering': '工程保险',
+    'property_liability': '物业管理责任险',
+    'cargo': '货运保险',
+    'enterprise_property': '企业财产保险'
+  };
+  return names[insuranceType] || '企业财产保险';
+}
+
+function getWarningTemplateKey(warningType) {
+  if (!warningType) return null;
+  const type = warningType.toLowerCase();
+  if (type.includes('雷')) return 'thunderstorm';
+  if (type.includes('暴雨') || type.includes('雨')) return 'rainstorm';
+  if (type.includes('台风')) return 'typhoon';
+  if (type.includes('强对流') || type.includes('大风')) return 'strong_gust';
+  if (type.includes('冰雹')) return 'hail';
+  return null;
+}
+
+function showRiskAdvice(cityName, targetName) {
+  const city = CITY_DATA[cityName];
+  if (!city) return;
+  
+  const allWarnings = getAllWarningsForCity(cityName).filter(w => w.status === 'active');
+  if (allWarnings.length === 0) {
+    alert('该城市当前无生效预警');
+    return;
+  }
+  
+  const insuranceType = targetName ? getInsuranceTypeByTargetName(targetName) : 'enterprise_property';
+  const insuranceTypeName = getInsuranceTypeName(insuranceType);
+  
+  let html = '';
+  
+  html += '<div class="risk-advice-warning-info">';
+  allWarnings.forEach(w => {
+    const severityClass = getSeverityClass(w.severity);
+    html += `<span class="risk-advice-warning-badge ${severityClass}">${w.typeName || w.type} ${w.severity}</span>`;
+  });
+  html += '</div>';
+  
+  if (targetName) {
+    html += `<div style="margin-bottom:16px;padding:10px;background:rgba(6,182,212,0.1);border-radius:6px;">`;
+    html += `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px;">标的名称</div>`;
+    html += `<div class="risk-advice-target-name">${targetName}</div>`;
+    html += `<div style="margin-top:6px;">保险类型：<span class="risk-advice-insurance-type">${insuranceTypeName}</span></div>`;
+    html += '</div>';
+  }
+  
+  allWarnings.forEach(w => {
+    const templateKey = getWarningTemplateKey(w.typeName || w.type);
+    if (!templateKey) return;
+    
+    const template = RISK_ADVICE_TEMPLATES[templateKey];
+    if (!template) return;
+    
+    const adviceList = template[insuranceType] || template.enterprise_property;
+    
+    html += '<div class="risk-advice-section">';
+    html += `<div class="risk-advice-section-title">${template.icon} ${template.name}风险提示</div>`;
+    html += '<ul class="risk-advice-list">';
+    adviceList.forEach(advice => {
+      html += `<li>${advice}</li>`;
+    });
+    html += '</ul>';
+    html += '</div>';
+  });
+  
+  document.getElementById('riskAdviceContent').innerHTML = html;
+  document.getElementById('riskAdviceModal').style.display = 'block';
+}
+
+function closeRiskAdvice() {
+  document.getElementById('riskAdviceModal').style.display = 'none';
+}
 </script>
+
+<!-- 风险提示模态框 -->
+<div id="riskAdviceModal" class="risk-advice-modal" onclick="if(event.target===this)closeRiskAdvice()">
+  <div class="risk-advice-content">
+    <div class="risk-advice-header">
+      <div class="risk-advice-title">⚠️ 风险提示建议</div>
+      <button class="risk-advice-close" onclick="closeRiskAdvice()">✕</button>
+    </div>
+    <div id="riskAdviceContent"></div>
+  </div>
+</div>
 </body>
 </html>
