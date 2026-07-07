@@ -434,6 +434,39 @@ body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.2); }
 }
+/* 地图上的台风高风险标的红色旗帜标记 */
+.typhoon-risk-marker {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.typhoon-risk-marker:hover {
+  transform: scale(1.3);
+}
+.typhoon-risk-marker .flag-pulse {
+  animation: flag-pulse-anim 2s ease-in-out infinite;
+}
+@keyframes flag-pulse-anim {
+  0%, 100% { opacity: 0.6; r: 6; }
+  50% { opacity: 0; r: 12; }
+}
+.typhoon-risk-tooltip {
+  position: fixed;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #e2e8f0;
+  pointer-events: none;
+  z-index: 9999;
+  max-width: 280px;
+  box-shadow: 0 4px 12px rgba(231,76,60,0.3);
+}
+.typhoon-risk-tooltip .tooltip-name {
+  color: #e74c3c;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
 
 /* 台风巴威面板 */
 .typhoon-panel {
@@ -945,19 +978,19 @@ body {
       <span class="tp-title">台风"巴威"进展通报</span>
       <span class="tp-badge">超强台风级</span>
     </div>
-    <div class="tp-row"><span>位置</span><span class="tp-val">塞班西偏南约175km (14.3°N, 145.1°E)</span></div>
+    <div class="tp-row"><span>位置</span><span class="tp-val">塞班西偏南约560km (16.0°N, 140.6°E)</span></div>
     <div class="tp-row"><span>强度</span><span class="tp-val">17级以上（62m/s）</span></div>
     <div class="tp-row"><span>气压</span><span class="tp-val">915 hPa</span></div>
     <div class="tp-row"><span>风圈</span><span class="tp-val">七级320-380km / 十级160km / 十二级80km</span></div>
-    <div class="tp-row"><span>直径</span><span class="tp-val">超1000公里（巨无霸级）</span></div>
+    <div class="tp-row"><span>直径</span><span class="tp-val">约1800公里</span></div>
     <div class="tp-row"><span>移速</span><span class="tp-val">西偏北 25-30km/h</span></div>
 
     <div class="tp-section">
       <div class="tp-section-title">📍 路径预报</div>
       <div class="tp-text">
-        <strong>7月7-8日</strong>：远洋西行，对我国海域暂无影响<br>
-        <strong>7月9日</strong>：进入台湾以东海域，进入福建台风警戒区<br>
-        <strong>7月10-11日</strong>：可能登陆/擦过台湾岛北部（16-17级）<br>
+        <strong>7月8日前</strong>：对我国无直接影响<br>
+        <strong>7月9日</strong>：趋向台湾以东海面<br>
+        <strong>7月10-11日</strong>：可能登陆或擦过台湾北部（16-17级）<br>
         <strong>7月11-12日</strong>：浙闽交界登陆（14-15级）<strong>或</strong>直接登陆浙江（14-16级）
       </div>
     </div>
@@ -965,20 +998,20 @@ body {
     <div class="tp-section">
       <div class="tp-section-title">⚠️ 影响评估</div>
       <div class="tp-text">
-        预计<strong>7月9日起</strong>开始影响我国东部地区。<br>
-        影响区域：东海、黄海南部、台湾海峡、华东沿海将有强风；台湾岛及华东将有暴雨到大暴雨，局地特大暴雨。<br>
+        已维持超强台风强度超72小时，强度强、体型大，周末可能登陆华东沿海。<br>
+        影响区域：浙江、上海、江苏、福建标的需高度警惕。<br>
         气象专家建议以应对<strong>"利奇马""烟花"</strong>的心态提前防御。
       </div>
     </div>
 
     <div class="tp-section">
-      <div class="tp-section-title">📊 标的关注</div>
+      <div class="tp-section-title">📊 看板标的关注</div>
       <div class="tp-text">
-        华东地区标的需重点关注：<strong>浙江（杭州、宁波、温州、台州、嘉兴、绍兴）、上海、江苏（南京、苏州、无锡、南通）</strong>。建议提前排查户外设施、临时建筑、在建工程等高风险标的。
+        华东沿海城市标的需高度警惕，尤其是<strong>浙江、上海、福建（福州、宁德）</strong>等区域。地图已标注🚩高风险标的位置。
       </div>
     </div>
 
-    <div class="tp-time">数据来源：中央气象台 · 更新时间：2026-07-07 08:00</div>
+    <div class="tp-time">数据来源：中央气象台 · 更新时间：2026-07-07 05:00</div>
   </div>
 
       <svg id="chinaMap" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid meet">
@@ -1516,6 +1549,79 @@ function renderCityMarkers() {
   });
 }
 
+
+
+// 台风高风险标的地图标记数据（含经纬度和偏移量以避免重叠）
+const TYPHOON_RISK_MARKERS = [
+  {name:"福建国贸启润汽车销售服务有限公司",city:"福州",district:"仓山区",lon:119.3,lat:26.08,dx:-4,dy:-6},
+  {name:"福建国贸东本汽车贸易有限公司",city:"福州",district:"仓山区",lon:119.3,lat:26.08,dx:4,dy:-6},
+  {name:"福建福申汽车销售服务有限公司",city:"福州",district:"仓山区",lon:119.3,lat:26.08,dx:-4,dy:2},
+  {name:"福建省福京汽车贸易有限公司",city:"福州",district:"仓山区",lon:119.3,lat:26.08,dx:4,dy:2},
+  {name:"福州凯迪汽车服务有限公司",city:"福州",district:"晋安区",lon:119.3,lat:26.08,dx:0,dy:-12},
+  {name:"福清信达通宝汽车销售服务有限公司",city:"福清",district:"福清市",lon:119.38,lat:25.73,dx:0,dy:-6},
+  {name:"福州信达嘉金雷克萨斯汽车销售服务有限公司",city:"福州",district:"仓山区",lon:119.3,lat:26.08,dx:-8,dy:8},
+  {name:"福州信达诺汽车销售服务有限公司",city:"福州",district:"马尾区",lon:119.3,lat:26.08,dx:8,dy:8},
+  {name:"三明厦钨新能源材料有限公司",city:"三明",district:"三元区",lon:117.64,lat:26.27,dx:-4,dy:-6},
+  {name:"宁化行洛坑钨矿有限公司",city:"三明",district:"宁化县",lon:117.64,lat:26.27,dx:4,dy:-6},
+  {name:"厦门厦钨新能源材料股份有限公司",city:"上海",district:"松江区",lon:121.47,lat:31.23,dx:0,dy:-6},
+  {name:"福建省天湖茶业有限公司",city:"宁德",district:"福鼎市",lon:119.53,lat:26.66,dx:-4,dy:-6},
+  {name:"宁德厦钨新能源材料有限公司",city:"宁德",district:"蕉城区",lon:119.53,lat:26.66,dx:4,dy:-6},
+  {name:"宁波振诚矿业有限公司",city:"宁波",district:"北仑区",lon:121.55,lat:29.87,dx:0,dy:-6}
+];
+
+// 渲染台风高风险标的地图标记（红色旗帜）
+function renderTyphoonRiskMarkers() {
+  const container = document.getElementById('cityMarkers');
+  TYPHOON_RISK_MARKERS.forEach(function(marker) {
+    const pos = lonLatToSvg(marker.lon, marker.lat);
+    if (!pos) return;
+    const sx = pos.sx + (marker.dx || 0);
+    const sy = pos.sy + (marker.dy || 0);
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'typhoon-risk-marker');
+    g.setAttribute('transform', 'translate(' + sx + ',' + sy + ')');
+    // 脉冲光圈
+    const pulse = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    pulse.setAttribute('class', 'flag-pulse');
+    pulse.setAttribute('cx', 0);
+    pulse.setAttribute('cy', 0);
+    pulse.setAttribute('r', 6);
+    pulse.setAttribute('fill', 'none');
+    pulse.setAttribute('stroke', '#e74c3c');
+    pulse.setAttribute('stroke-width', '1.5');
+    g.appendChild(pulse);
+    // 红色旗帜emoji
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', 0);
+    txt.setAttribute('y', 2);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('font-size', '10');
+    txt.textContent = '🚩';
+    g.appendChild(txt);
+    // 悬停事件
+    g.addEventListener('mouseenter', function(e) {
+      var tip = document.createElement('div');
+      tip.className = 'typhoon-risk-tooltip';
+      tip.id = 'typhoon-risk-tip';
+      tip.innerHTML = '<div class="tooltip-name">🚩 ' + marker.name + '</div><div>' + marker.city + ' · ' + marker.district + '</div>';
+      tip.style.left = (e.clientX + 12) + 'px';
+      tip.style.top = (e.clientY - 10) + 'px';
+      document.body.appendChild(tip);
+    });
+    g.addEventListener('mousemove', function(e) {
+      var tip = document.getElementById('typhoon-risk-tip');
+      if (tip) {
+        tip.style.left = (e.clientX + 12) + 'px';
+        tip.style.top = (e.clientY - 10) + 'px';
+      }
+    });
+    g.addEventListener('mouseleave', function() {
+      var tip = document.getElementById('typhoon-risk-tip');
+      if (tip) tip.remove();
+    });
+    container.appendChild(g);
+  });
+}
 
 // 台风高风险标的标记
 function isHighRiskProp(insuredName) {
@@ -3041,3 +3147,4 @@ setTimeout(function() {
 </div>
 </body>
 </html>
+
