@@ -1394,8 +1394,7 @@ function applyFilters() {
     `${filteredCities.length}城市 / ${totalProps}标的`;
   
   // 重新渲染
-  renderCityMarkers();
-  renderTyphoonRiskMarkers();
+  updateMarkerSelection();
   renderCityList();
   renderSummary();
   renderImpactAssessment();
@@ -1569,6 +1568,60 @@ const TYPHOON_RISK_MARKERS = [
   {name:"宁德厦钨新能源材料有限公司",city:"宁德",district:"蕉城区",lon:119.53,lat:26.66,dx:4,dy:-6},
   {name:"宁波振诚矿业有限公司",city:"宁波",district:"北仑区",lon:121.55,lat:29.87,dx:0,dy:-6}
 ];
+
+
+// 轻量级选中状态更新：不重建DOM，只修改现有标记的样式
+function updateMarkerSelection() {
+  const container = document.getElementById('cityMarkers');
+  if (!container) return;
+  container.querySelectorAll('.city-marker').forEach(g => {
+    const cityName = g.getAttribute('data-city');
+    const isSelected = selectedMarkerCity === cityName;
+    const city = CITY_DATA[cityName];
+    if (!city) return;
+    const warnings = cityWarningData[city.qid]?.warning || [];
+    const hasWarning = warnings.length > 0;
+    const size = getMarkerSize(city.count);
+    
+    // 更新 class
+    g.classList.toggle('selected', isSelected);
+    
+    // 更新光晕
+    const glow = g.querySelector('.marker-glow');
+    if (glow) {
+      if (isSelected) {
+        glow.setAttribute('opacity', '0');
+        // 移除动画
+        while (glow.firstChild) glow.removeChild(glow.firstChild);
+      } else if (hasWarning) {
+        glow.setAttribute('opacity', '');
+        if (!glow.querySelector('animate')) {
+          glow.innerHTML = `<animate attributeName="r" from="0" to="10" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.5" to="0" dur="3s" repeatCount="indefinite"/>`;
+        }
+      }
+    }
+    
+    // 更新外圈
+    const ring = g.querySelector('.marker-ring');
+    if (ring) {
+      ring.setAttribute('stroke', isSelected ? '#06B6D4' : (hasWarning ? 'rgba(249,115,22,0.7)' : 'rgba(59,130,246,0.5)'));
+      ring.setAttribute('stroke-width', isSelected ? 3 : 1.5);
+    }
+    
+    // 更新内圆
+    const inner = g.querySelector('.inner');
+    if (inner) {
+      inner.setAttribute('stroke-width', isSelected ? 2.5 : 1.5);
+    }
+    
+    // 更新文字
+    const text = g.querySelector('text');
+    if (text) {
+      text.setAttribute('fill', isSelected ? '#06B6D4' : '#E2E8F0');
+    }
+  });
+}
 
 // 渲染台风高风险标的地图标记（红色旗帜）
 function renderTyphoonRiskMarkers() {
@@ -1978,8 +2031,7 @@ function toggleCitySelection(cityName) {
     selectedMarkerCity = cityName;
   }
   
-  renderCityMarkers();
-  renderTyphoonRiskMarkers();
+  updateMarkerSelection();
   activeCity = cityName;
   renderCityList();
   
@@ -2002,8 +2054,7 @@ function toggleCitySelection(cityName) {
 function selectCity(cityName) {
   activeCity = cityName;
   selectedMarkerCity = cityName;
-  renderCityMarkers();
-  renderTyphoonRiskMarkers();
+  updateMarkerSelection();
   renderCityList();
   
   const item = document.querySelector(`.city-item[data-city="${cityName}"]`);
