@@ -2196,6 +2196,7 @@ async function refreshData() {
     document.getElementById('refreshTime').textContent = `更新: ${dataTime}`;
     document.getElementById('warningRefreshTime').textContent = `共享数据同步`;
     
+    fetchOpenMeteoForecasts();
     console.log(`[共享数据] 加载完成: 天气${Object.keys(cityWeatherData).length}城, 预警${Object.keys(cityWarningData).length}城, 预报${Object.keys(cityForecastData).length}城`);
   } catch (e) {
     console.error('[共享数据] 加载失败:', e.message);
@@ -2746,53 +2747,91 @@ function getWeatherIcon(text) {
   return '🌤️';
 }
 
+// ========== Open-Meteo 预报数据集成 ==========
+let openMeteoData = {};
+const WMO_CODES = {
+  0:{t:'晴',r:'green'},1:{t:'晴',r:'green'},2:{t:'多云',r:'green'},3:{t:'阴',r:'green'},
+  45:{t:'雾',r:'yellow'},48:{t:'雾凇',r:'yellow'},
+  51:{t:'小雨',r:'green'},53:{t:'中雨',r:'yellow'},55:{t:'大雨',r:'orange'},
+  56:{t:'冻雨',r:'orange'},57:{t:'强冻雨',r:'red'},
+  61:{t:'小雨',r:'green'},63:{t:'中雨',r:'yellow'},65:{t:'大雨',r:'orange'},
+  66:{t:'冻雨',r:'orange'},67:{t:'强冻雨',r:'red'},
+  71:{t:'小雪',r:'green'},73:{t:'中雪',r:'yellow'},75:{t:'大雪',r:'orange'},77:{t:'雪粒',r:'yellow'},
+  80:{t:'小阵雨',r:'green'},81:{t:'中阵雨',r:'yellow'},82:{t:'大暴雨',r:'red'},
+  85:{t:'小阵雪',r:'green'},86:{t:'大阵雪',r:'orange'},
+  95:{t:'雷暴',r:'orange'},96:{t:'雷暴伴冰雹',r:'red'},99:{t:'强雷暴冰雹',r:'red'}
+};
+function wmoInfo(c){return WMO_CODES[c]||{t:'未知',r:'green'};}
+function wmoIcon(c){
+  if(c<=1)return'☀️';if(c<=3)return c===2?'⛅':'☁️';if(c>=95)return'⛈️';
+  if(c>=80)return'🌧️';if(c>=71)return'🌨️';if(c>=51)return'🌧️';if(c>=45)return'🌫️';return'🌤️';
+}
+async function fetchOpenMeteoForecasts(){
+  const cities=Object.keys(CITY_DATA);if(!cities.length)return;
+  const BATCH=10;const results={};
+  for(let i=0;i<cities.length;i+=BATCH){
+    const batch=cities.slice(i,i+BATCH);
+    const ps=batch.map(async cn=>{
+      const c=CITY_DATA[cn];if(!c.lat||!c.lon)return null;
+      try{
+        const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,weathercode&forecast_days=3&timezone=Asia/Shanghai`);
+        if(!r.ok)return null;const d=await r.json();if(!d.daily)return null;
+        const days=[];
+        for(let j=0;j<(d.daily.time||[]).length;j++){
+          const code=d.daily.weathercode?.[j]??0;const info=wmoInfo(code);
+          days.push({date:d.daily.time[j],text:info.t,risk:info.r,icon:wmoIcon(code),
+            tempMax:d.daily.temperature_2m_max?.[j],tempMin:d.daily.temperature_2m_min?.[j],
+            precip:d.daily.precipitation_sum?.[j]??0,windMax:d.daily.windspeed_10m_max?.[j]??0,code});
+        }
+        return{cn,days};
+      }catch(e){return null;}
+    });
+    const br=await Promise.all(ps);br.forEach(x=>{if(x)results[x.cn]=x.days;});
+  }
+  openMeteoData=results;
+  console.log(`[Open-Meteo] 预报加载: ${Object.keys(results).length}城`);
+  renderForecastOutlook();
+}
+
 function renderForecastOutlook() {
   const container = document.getElementById('forecastOutlookList');
   if (!container) return;
   
-  // Get cities with properties that have forecast data
+  // 使用Open-Meteo数据
   const cityForecasts = [];
-  Object.keys(CITY_DATA).forEach(cityName => {
-    const city = CITY_DATA[cityName];
-    const forecasts = cityForecastData[city.qid] || [];
-    if (forecasts.length > 0) {
-      // Calculate max risk across all forecast days
-      let maxRisk = 0;
-      forecasts.forEach(f => {
-        const level = getWeatherRiskLevel(f.text || f.description || '');
-        const riskOrder = {'green':0,'yellow':1,'orange':2,'red':3};
-        if ((riskOrder[level]||0) > maxRisk) maxRisk = riskOrder[level]||0;
-      });
-      cityForecasts.push({ city: cityName, forecasts, maxRisk });
-    }
+  Object.keys(openMeteoData).forEach(cityName => {
+    const days = openMeteoData[cityName];
+    if (!days || days.length === 0) return;
+    let maxRisk = 0;
+    const riskOrder = {'green':0,'yellow':1,'orange':2,'red':3};
+    days.forEach(d => { if ((riskOrder[d.risk]||0) > maxRisk) maxRisk = riskOrder[d.risk]||0; });
+    cityForecasts.push({ city: cityName, days, maxRisk });
   });
   
-  // Sort by risk level (high to low)
   cityForecasts.sort((a, b) => b.maxRisk - a.maxRisk);
   
   if (cityForecasts.length === 0) {
-    container.innerHTML = '<div class="stat-empty">暂无预报数据</div>';
+    container.innerHTML = '<div class="stat-empty">正在获取预报数据...</div>';
     return;
   }
   
+  const riskColors = ['green','yellow','orange','red'];
   let html = '';
   cityForecasts.slice(0, 30).forEach(cf => {
-    const riskColors = ['green','yellow','orange','red'];
+    const city = CITY_DATA[cf.city];
     html += '<div class="forecast-outlook-city">';
-    html += `<div class="foc-name"><span class="risk-dot ${riskColors[cf.maxRisk]}"></span> ${cf.city} <span style="font-size:11px;color:var(--text-secondary)">(${CITY_DATA[cf.city].count}标的)</span></div>`;
-    cf.forecasts.slice(0, 3).forEach(f => {
-      const text = f.text || f.description || '未知';
-      const riskLevel = getWeatherRiskLevel(text);
-      const icon = getWeatherIcon(text);
-      const dateStr = f.date ? f.date.substring(5) : '';
-      const tempMin = f.tempMin != null ? Math.round(f.tempMin) : '-';
-      const tempMax = f.tempMax != null ? Math.round(f.tempMax) : '-';
+    html += `<div class="foc-name"><span class="risk-dot ${riskColors[cf.maxRisk]}"></span> ${cf.city} <span style="font-size:11px;color:var(--text-secondary)">(${city.count}标的)</span></div>`;
+    cf.days.slice(0, 3).forEach(d => {
+      const dateStr = d.date ? d.date.substring(5) : '';
+      const tempMin = d.tempMin != null ? Math.round(d.tempMin) : '-';
+      const tempMax = d.tempMax != null ? Math.round(d.tempMax) : '-';
       html += `<div class="forecast-outlook-day">`;
       html += `<span class="fo-date">${dateStr}</span>`;
-      html += `<span class="risk-dot ${riskLevel}"></span>`;
-      html += `<span class="fo-icon">${icon}</span>`;
-      html += `<span class="fo-text">${text}</span>`;
+      html += `<span class="risk-dot ${d.risk}"></span>`;
+      html += `<span class="fo-icon">${d.icon}</span>`;
+      html += `<span class="fo-text">${d.text}</span>`;
       html += `<span class="fo-temp">${tempMin}°~${tempMax}°</span>`;
+      if (d.precip > 0) html += `<span class="fo-rain">💧${d.precip.toFixed(1)}mm</span>`;
       html += '</div>';
     });
     html += '</div>';
