@@ -1181,7 +1181,7 @@ const FOCUS_WARNING_TYPES = ['雷电', '暴雨', '台风', '强对流', '冰雹'
 const FOCUS_WARNING_LEVELS = ['黄色', '橙色', '红色'];
 
 // 共享数据源URL
-const SHARED_DATA_URL = 'https://cdn.jsdelivr.net/gh/qiqi1616/-weather-dashboard@main/data/weather.json';
+const SHARED_DATA_URL = 'https://qiqi1616.github.io/-weather-dashboard/data/weather.json';
 
 
 // ========== 筛选状态 ==========
@@ -1395,6 +1395,7 @@ function applyFilters() {
   
   // 重新渲染
   renderCityMarkers();
+  renderTyphoonRiskMarkers();
   renderCityList();
   renderSummary();
   renderImpactAssessment();
@@ -1978,6 +1979,7 @@ function toggleCitySelection(cityName) {
   }
   
   renderCityMarkers();
+  renderTyphoonRiskMarkers();
   activeCity = cityName;
   renderCityList();
   
@@ -2001,6 +2003,7 @@ function selectCity(cityName) {
   activeCity = cityName;
   selectedMarkerCity = cityName;
   renderCityMarkers();
+  renderTyphoonRiskMarkers();
   renderCityList();
   
   const item = document.querySelector(`.city-item[data-city="${cityName}"]`);
@@ -2297,6 +2300,7 @@ async function refreshData() {
     
     // 更新UI
     renderCityMarkers();
+    renderTyphoonRiskMarkers();
     renderCityList();
     renderSummary();
     renderImpactAssessment();
@@ -2328,6 +2332,7 @@ function init() {
   initMapZoom();
   
   renderCityMarkers();
+  renderTyphoonRiskMarkers();
   renderCityList();
   renderSummary();
   renderImpactAssessment();
